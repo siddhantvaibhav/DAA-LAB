@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_CITIES 10
+
+int dist[MAX_CITIES][MAX_CITIES];
+int visited[MAX_CITIES];
+
+int calculateRouteDistance(int route[], int n) {
+    int distance = 0;
+    for (int i = 0; i < n - 1; i++) {
+        distance += dist[route[i]][route[i + 1]];
+    }
+    distance += dist[route[n - 1]][route[0]];
+    return distance;
+}
+
+void findShortestRoute(int cities[], int n, int *minDistance, int *bestRoute) {
+    if (n == 1) {
+        int routeDistance = calculateRouteDistance(cities, *minDistance);
+        if (routeDistance < *minDistance) {
+            *minDistance = routeDistance;
+            for (int i = 0; i < *minDistance; i++) {
+                bestRoute[i] = cities[i];
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (visited[i]) continue;
+        visited[i] = 1;
+        cities[n] = i;
+        findShortestRoute(cities, n + 1);
+        visited[i] = 0;
+    }
+}
+
+int main() {
+    int N;
+
+    printf("Enter the number of cities: ");
+    scanf("%d", &N);
+
+    printf("Enter the distance matrix:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            scanf("%d", &dist[i][j]);
+        }
+    }
+
+    int cities[N];
+    int bestRoute[MAX_CITIES];
+    int minDistance = INT_MAX;
+
+    findShortestRoute(cities, N, &minDistance, bestRoute);
+
+    printf("The minimum distance is: %d\n", minDistance);
+    printf("The best route is: ");
+    for (int i = 0; i < N; i++) {
+        printf("%d ", bestRoute[i] + 1);
+    }
+    printf("\n");
+
+    return 0;
+}
